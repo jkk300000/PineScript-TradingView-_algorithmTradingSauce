@@ -1,0 +1,2 @@
+# PineScript-TradingView-_algorithmTradingSauce
+PineScript(TradingView)_TradingAlgorithm
