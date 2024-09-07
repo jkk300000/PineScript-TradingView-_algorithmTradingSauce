@@ -1,0 +1,97 @@
+//@version=5
+strategy("내 전략", overlay=true, initial_capital = 100, default_qty_type = strategy.percent_of_equity, default_qty_value = 90, process_orders_on_close = true)
+import TradingView/Strategy/3
+import TradingView/ta/7
+
+
+
+supertrend(atrPeriod, Multiplier) =>
+
+    float superTrend = na
+    bool signal = false
+
+    src = input(hl2, title="Source")
+    changeATR= input.bool(title="Change ATR Calculation Method ?", defval=true)
+    showsignals = input.bool(title="Show Buy/Sell Signals ?", defval=true)
+    highlighting = input.bool(title="Highlighter On/Off ?", defval=true)
+    atr2 = ta.sma(ta.tr, atrPeriod)
+    atr= changeATR ? ta.atr(atrPeriod) : atr2
+    up=src-(Multiplier*atr)
+    up1 = nz(up[1],up)
+    up := close[1] > up1 ? math.max(up,up1) : up
+    dn=src+(Multiplier*atr)
+    dn1 = nz(dn[1], dn)
+    dn := close[1] < dn1 ? math.min(dn, dn1) : dn
+    trend = 1
+    trend := nz(trend[1], trend)
+    trend := trend == -1 and close > dn1 ? 1 : trend == 1 and close < up1 ? -1 : trend
+
+    buySignal = trend == 1 and trend[1] == -1
+    sellSignal = trend == -1 and trend[1] == 1
+
+    if buySignal
+        signal := true
+
+    longFillColor = highlighting ? (trend == 1 ? color.green : color.white) : color.white
+    shortFillColor = highlighting ? (trend == -1 ? color.red : color.white) : color.white
+
+    changeCond = trend != trend[1]
+    superTrend := trend == 1 ? up : dn
+    [superTrend, trend, signal]
+
+atrPeriod = input.int(title="ATR Period", defval=12)
+atrPeriod2 = input.int(title="ATR Period", defval=10)
+atrPeriod3 = input.int(title="ATR Period", defval=11)
+
+Multiplier = input.float(title="ATR Multiplier",step=0.1, defval=3)
+
+Multiplier2 = input.float(title="ATR Multiplier",step=0.1, defval=1)
+
+Multiplier3 = input.float(title="ATR Multiplier",step=0.1, defval=2)
+
+[supertrend1, direction1, signal] = supertrend(atrPeriod, Multiplier)
+
+[supertrend2, direction2, signal2] = supertrend(atrPeriod2,Multiplier2)
+
+[supertrend3, direction3, signal3] = supertrend(atrPeriod3,Multiplier3)
+
+volumeLength = input(15, title="Volume Moving Average Length")
+volumeSMA = ta.sma(volume, volumeLength)
+
+longCondition = direction1 == 1 and direction2 == 1 and direction3 == 1 and ta.crossover(volume,volumeSMA)
+if (strategy.position_size == 0 and longCondition)
+
+
+
+    strategy.entry("longPosition", strategy.long)
+
+    // limitPrice = close + (close - supertrend2) * 1
+
+    // strategy.exit("롱 포지션 50%", "longPosition", qty_percent = 50, limit = limitPrice)
+
+
+
+
+if (strategy.position_size > 0 and direction1 == -1)
+
+    strategy.close("longPosition","롱 포지션 청산")
+
+
+
+//Short position conditions
+
+
+// shortCondition = direction1 == -1 and direction2 == -1 and direction3 == -1
+// if (strategy.position_size == 0 and shortCondition)
+
+
+//     strategy.entry("shortPosition", strategy.short)
+//     // limitPrice = close - (supertrend2 - close) * 1
+//     // strategy.exit("숏 포지션 50%", "shortPosition", qty_percent = 50, limit = limitPrice)
+
+
+
+
+// if (strategy.position_size < 0 and direction1 == 1)
+
+//     strategy.close("shortPosition","숏 포지션 청산")

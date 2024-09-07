@@ -1,0 +1,92 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © s4wlsrud
+
+//@version=5
+//@strategy_alert_message {{strategy.order.alert_message}}
+// ************************************** POA ************************************** //
+import dokang/POA/13 as POA
+
+// 시작시간, 종료시간 설정
+start_time = input.time(timestamp("2000-07-10T01:54:00+09:00"), title="자동매매 시작")
+end_time = input.time(timestamp("2025-07-10T01:48:00+09:00"), title="자동매매 종료")
+
+// 포아봇 설정
+pstrategy = POA.bot.new("", start_time, end_time, leverage = 5)
+pstrategy.start_trade()
+// ********************************************************************************* //
+
+strategy("parabolic + ema200", overlay=true, initial_capital = 160, default_qty_type = strategy.percent_of_equity, default_qty_value = 90, process_orders_on_close = true, commission_value = 0.05)
+//parabolic
+start = input.float(title="Start", step=0.001, defval=0.02)
+increment = input.float(title="Increment", step=0.001, defval=0.02)
+maximum = input.float(title="Maximum", step=0.01, defval=0.2)
+width = input.int(title="Point Width",  minval=1, defval=2)
+highlightStartPoints = input(title="Highlight Start Points ?", defval=true)
+showLabels = input(title="Show Buy/Sell Labels ?", defval=true)
+highlightState = input(title="Highlight State ?",  defval=true)
+
+psar = ta.sar(start, increment, maximum)
+dir = psar < close ? 1 : -1
+
+psarColor = dir == 1 ? #3388bb : #fdcc02
+psarPlot = plot(psar, title="PSAR", style=plot.style_circles, linewidth=width, color=psarColor)
+
+var color longColor = color.green
+var color shortColor = color.red
+
+buySignal = dir == 1 and dir[1] == -1
+plotshape(buySignal and highlightStartPoints ? psar : na, title="Long Start", location=location.absolute, style=shape.circle, size=size.tiny, color=longColor)
+plotshape(buySignal and showLabels ? psar : na, title="Buy Label", text="Buy", location=location.absolute, style=shape.labelup, size=size.tiny, color=longColor, textcolor=color.white)
+
+sellSignal = dir == -1 and dir[1] == 1
+plotshape(sellSignal and highlightStartPoints ? psar : na, title="Short Start", location=location.absolute, style=shape.circle, size=size.tiny, color=shortColor)
+plotshape(sellSignal and showLabels ? psar : na, title="Sell Label", text="Sell", location=location.absolute, style=shape.labeldown, size=size.tiny, color=shortColor, textcolor=color.white)
+
+midPricePlot = plot(ohlc4, title="", display=display.none)
+
+fillColor = highlightState ? (dir == 1 ? longColor : shortColor) : na
+fill(midPricePlot, psarPlot, title="Trade State Filling", color=fillColor)
+
+changeCond = dir != dir[1]
+// alertcondition(changeCond, title="Alert: PSAR Direction Change", message="PSAR has changed direction!")
+// alertcondition(buySignal, title="Alert: PSAR Long", message="PSAR Long")
+// alertcondition(sellSignal, title="Alert: PSAR Short", message="PSAR Sell")
+// ema200
+length200 = input.int(200, minval=1)
+ema200 = ta.ema(close, length200)
+
+//rsi
+rsi = ta.rsi(close,14)
+//support and resistance
+
+toggleBreaks  = input(true, title = "Show Breaks" )
+leftBars  = input(10, title = "Left Bars ")
+rightBars  = input(10, title = "Right Bars")
+volumeThresh  = input(30, title = "Volume Threshold")
+//
+highUsePivot = fixnan(ta.pivothigh(leftBars, rightBars)[1])
+lowUsePivot = fixnan(ta.pivotlow(leftBars, rightBars)[1])
+// r1 = plot(highUsePivot, title="Resistance", ta.change(highUsePivot) ? na : #FF0000,  linewidth=3, offset=-(rightBars+1), )
+// s1 = plot(lowUsePivot, ta.change(lowUsePivot) ? na : #233dee,  linewidth=3, offset=-(rightBars+1), title="Support")
+
+//Volume %
+short = ta.ema(volume, 5)
+long = ta.ema(volume, 10)
+osc = 100 * (short - long) / long
+//For breaks with volume
+plotshape(toggleBreaks and ta.crossunder(close,lowUsePivot) and not (open - close < high - open) and osc > volumeThresh, title = "Break", text = 'B', style = shape.labeldown, location = location.abovebar, color= color.red,textcolor = color.white, size = size.tiny)
+plotshape(toggleBreaks and ta.crossover(close,highUsePivot ) and not(open - low > close - open) and osc > volumeThresh, title = "Break", text = 'B', style = shape.labelup, location = location.belowbar, color= color.green,textcolor = color.white, size = size.tiny)
+
+//For bull / bear wicks
+plotshape(toggleBreaks and ta.crossover(close,highUsePivot ) and open - low > close - open , title = "Break", text = 'Bull Wick', style = shape.labelup, location = location.belowbar, color= color.green,textcolor = color.white, size = size.tiny)
+plotshape(toggleBreaks and ta.crossunder(close,lowUsePivot) and open - close < high - open , title = "Break", text = 'Bear Wick', style = shape.labeldown, location = location.abovebar, color= color.red,textcolor = color.white, size = size.tiny)
+longCondition = close > ema200 and rsi > 50 and buySignal
+if (strategy.position_size ==0 and longCondition)
+    pstrategy.entry("longPosition", "strategy.long")
+    profit = close + (close - lowUsePivot) * 1.5
+    pstrategy.exit("롱 포지션 종료", "longPosition", stop=lowUsePivot, limit=profit)
+shortCondition = close < ema200 and rsi < 50 and sellSignal
+if (strategy.position_size ==0 and shortCondition)
+    pstrategy.entry("shortPosition", "strategy.short")
+    profit = close - (highUsePivot - close) * 1.5
+    pstrategy.exit("숏 포지션 종료", "shortPosition", stop=highUsePivot, limit=profit)
