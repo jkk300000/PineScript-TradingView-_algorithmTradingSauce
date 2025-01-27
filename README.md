@@ -8,7 +8,7 @@ PineScript(TradingView)_TradingAlgorithm
 
 3rsi 전략
 
-- 전략 설명 : 3개의 rsi를 사용하는 지표와 가격 변동 추세를 파악하는 지표인 adxr, ema 선을 활용하여 3가지 지표의 특정 조건이 발생했을 시 롱 포지션에 진입하는 전략.
+- 3개의 rsi를 사용하는 지표와 가격 변동 추세를 파악하는 지표인 adxr, ema 선을 활용하여 3가지 지표의 특정 조건이 발생했을 시 롱 포지션에 진입하는 전략.
 
 ![3rsi전략_pinescript](https://github.com/user-attachments/assets/fbb43fe4-74c8-4ed8-9ace-6fa6aa5fd61c)
 
