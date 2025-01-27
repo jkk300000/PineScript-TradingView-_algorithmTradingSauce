@@ -14,23 +14,23 @@ PineScript(TradingView)_TradingAlgorithm
 
 1. 사용 중인 3rsi의 성과 오버뷰 화면
 
-해당 전략의 순익, 승률, 수익 팩터, 최대 손실폭(mdd) 등을 보여줍니다. 
+- 해당 전략의 순익, 승률, 수익 팩터, 최대 손실폭(mdd) 등을 보여줍니다. 
 ![3rsi전략_오버뷰](https://github.com/user-attachments/assets/7e4c4f71-9438-4290-bead-cef0a3fffb1b)
 
 2. 사용 중인 3rsi의 성과 요약 화면
 
-해당 전략과 관련된 순익, 총수익 및 손실, 샤프 비율 , 소티노 비율 등의 지표를 제공하여 전략의 성과 및 실현 가능성에 대해 판단할 수 있습니다. 
+- 해당 전략과 관련된 순익, 총수익 및 손실, 샤프 비율 , 소티노 비율 등의 지표를 제공하여 전략의 성과 및 실현 가능성에 대해 판단할 수 있습니다. 
 ![3rsi전략_성과요약](https://github.com/user-attachments/assets/8829812b-1e3a-428e-9777-0054d6cf5610)
 
 3. 3rsi 전략 포지션 진입 시그널
    
-pinescript를 통해 작성한 특정 조건이 발생할 경우, 진입 시그널 발생
+- pinescript를 통해 작성한 특정 조건이 발생할 경우, 진입 시그널 발생
 ![3rsi전략_시그널](https://github.com/user-attachments/assets/27341928-a7f9-456d-983d-56ff5e08e2f4)
 
 
 5. 3rsi 전략 얼러트
    
-진입 시그널 발생 시 해당 시그널을 거래소와 연동한 가성 서버로 전달하기 위해 트레이딩 뷰에서 제공하는 기능인 얼러트를 사용합니다.
+- 진입 시그널 발생 시 해당 시그널을 거래소와 연동한 가성 서버로 전달하기 위해 트레이딩 뷰에서 제공하는 기능인 얼러트를 사용합니다.
 ![3rsi전략_얼러트](https://github.com/user-attachments/assets/d92cd826-e93c-40ff-922e-6282f95186b0)
 
 
