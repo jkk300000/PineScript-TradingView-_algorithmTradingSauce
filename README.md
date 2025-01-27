@@ -23,14 +23,16 @@ PineScript(TradingView)_TradingAlgorithm
 ![3rsi전략_성과요약](https://github.com/user-attachments/assets/8829812b-1e3a-428e-9777-0054d6cf5610)
 
 3. 3rsi 전략 포지션 진입 시그널
+   
 pinescript를 통해 작성한 특정 조건이 발생할 경우, 진입 시그널 발생
 ![3rsi전략_시그널](https://github.com/user-attachments/assets/27341928-a7f9-456d-983d-56ff5e08e2f4)
 
 
-4. 3rsi 전략 얼러트
+5. 3rsi 전략 얼러트
+   
 진입 시그널 발생 시 해당 시그널을 거래소와 연동한 가성 서버로 전달하기 위해 트레이딩 뷰에서 제공하는 기능인 얼러트를 사용합니다.
 ![3rsi전략_얼러트](https://github.com/user-attachments/assets/d92cd826-e93c-40ff-922e-6282f95186b0)
 
 
-5. 실제 거래소와 연동하여 매매를 진행하는 클라우드 서버 (vultr)
+7. 실제 거래소와 연동하여 매매를 진행하는 클라우드 서버 (vultr)
 ![3rsi전략_클라우드서버(vultr)](https://github.com/user-attachments/assets/4ae4144b-d625-499f-ae11-4ced86886d6b)
